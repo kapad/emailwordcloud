@@ -61,9 +61,10 @@ class Neo4jInterface{
 		}else{
 			$wordNodeString = "*";
 		}
+
 		$queryString = "start n=node($wordNodeString)
 						match n<-[r]-email-[s]->word
-						where n.type='word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
+						where n.type?= 'word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
 						return sum(s.count), word.value";
 		$query = new Query($this->_client,$queryString);
 		$result = $query->getResultSet() ;
@@ -93,7 +94,7 @@ class Neo4jInterface{
 							 ->setProperty('value', $word)
 							 ->save() ;
 
-			$this->_wordIndex->add($wordNode,'words',$wordNode->getProperty('value'));
+			$this->_wordIndex->add($wordNode,'value',$wordNode->getProperty('value'));
 		}
 		return $wordNode;
 	}
@@ -116,7 +117,7 @@ class Neo4jInterface{
 						  ->setProperty('token',$emailToken)
 						  ->setProperty('type', 'email')
 						  ->save();
-		$this->_emailIndex->add($emailNode,'emails',$emailNode->getProperty('token'));
+		$this->_emailIndex->add($emailNode,'token',$emailNode->getProperty('token'));
 		return $emailNode ;
 	}
 
@@ -178,7 +179,7 @@ class Neo4jInterface{
 	public function isWordNodeExists($word){
 		if(empty($word)) throw new Exception("Empty word given. Not allowed", 1000);
 		
-		$wordNode = $this->_wordIndex->findOne('words',$word );
+		$wordNode = $this->_wordIndex->findOne('value',$word );
 		return (empty($wordNode)) ? false:$wordNode ;
 	}
 
@@ -190,7 +191,7 @@ class Neo4jInterface{
 	public function isEmailNodeExists($emailToken){
 		if(empty($emailToken)) throw new Exception("Empty email token given. Not allowed", 1001);
 		
-		$emailNode = $this->_emailIndex->findOne('emails',$emailToken);
+		$emailNode = $this->_emailIndex->findOne('token',$emailToken);
 		return (empty($emailNode)) ? false:$emailNode ;
 	}
 }
