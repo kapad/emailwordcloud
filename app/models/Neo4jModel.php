@@ -9,6 +9,6 @@ class Neo4jModel{
 	 */
 	public function getWordCount($wordArray = null){
 		$neoInterface = new Neo4jInterface() ;
-		return $neoInterface->getWordCount() ;
+		return $neoInterface->getWordCount($wordArray) ;
 	}
 }

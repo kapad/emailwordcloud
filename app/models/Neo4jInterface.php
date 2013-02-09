@@ -61,9 +61,10 @@ class Neo4jInterface{
 		}else{
 			$wordNodeString = "*";
 		}
+
 		$queryString = "start n=node($wordNodeString)
 						match n<-[r]-email-[s]->word
-						where n.type='word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
+						where n.type?= 'word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
 						return sum(s.count), word.value";
 		$query = new Query($this->_client,$queryString);
 		$result = $query->getResultSet() ;
