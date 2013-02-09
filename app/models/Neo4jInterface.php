@@ -5,6 +5,7 @@ use Everyman\Neo4j\Client,
 	Everyman\Neo4j\Index\RelationshipIndex,
 	Everyman\Neo4j\Node,
 	Everyman\Neo4j\Path,
+	Everyman\Neo4j\Cypher\Query,
 	Everyman\Neo4j\Cypher;
 /**
  * This class interfaces with the Neo4j db
@@ -41,6 +42,38 @@ class Neo4jInterface{
 		$this->_emailIndex->save();
 		$this->_containsIndex = new RelationshipIndex($this->_client,'contains');
 		$this->_containsIndex->save();
+	}
+
+	/**
+	 * This function returns the array of words and their occurrence count
+	 * @param  Array $wordArray 
+	 * @return Array            
+	 */
+	public function getWordCount($wordArray = null){
+		$wordNodeList = array(); 		
+		if(is_array($wordArray)){
+			foreach ($wordArray as $word) {
+				$wordNode = $this->isWordNodeExists($word);
+				if($wordNode)
+					array_push($wordNodeList,$wordNode->getId());
+			}
+			$wordNodeString = (count($wordNodeList))?implode(',', $wordNodeList) : "*";
+		}else{
+			$wordNodeString = "*";
+		}
+		$queryString = "start n=node($wordNodeString)
+						match n<-[r]-email-[s]->word
+						where n.type='word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
+						return sum(s.count), word.value";
+		$query = new Query($this->_client,$queryString);
+		$result = $query->getResultSet() ;
+		$resultArray = array();
+		foreach ($result as $row) {
+			$wordArray = array( 'weight' => $row[0],
+								'text' => $row[1]);
+			array_push($resultArray, $wordArray);
+		}
+		return $resultArray;
 	}
 
 	/**
@@ -146,7 +179,6 @@ class Neo4jInterface{
 		if(empty($word)) throw new Exception("Empty word given. Not allowed", 1000);
 		
 		$wordNode = $this->_wordIndex->findOne('words',$word );
-		// print_r($wordNode);
 		return (empty($wordNode)) ? false:$wordNode ;
 	}
 
