@@ -10,8 +10,8 @@ class PushController extends BaseController {
 	public function store() {
 
 		try {
-			$params = Input::json();
 			Log::debug(var_export(file_get_contents('php://input'), true));
+			$params = Input::json();
 			Log::debug(var_export($params, true));
 			$this->validateStoreParams( $params );
 			$pushReceiver = App::make( 'PushReceiver');

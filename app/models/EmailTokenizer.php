@@ -46,7 +46,6 @@ class EmailTokenizer {
 
 	public function __construct($email) {
 		$this->email = $email;
-		Log::debug(var_export($email, true));
 		$this->initialize();
 	}
 
@@ -107,7 +106,6 @@ class EmailTokenizer {
 	private function strippedBody() {
 
 		$str = preg_replace('/[^a-z0-9\'\s]+/i', '', $this->body);
-		Log::debug($str);
 		return $str;
 
 	}
@@ -115,13 +113,9 @@ class EmailTokenizer {
 	public function storeToGraph() {
 
 		$id = hash('md5', $this->toString());
-		Log::debug($id);
-		Log::debug($this->toString());
-		Log::debug(var_export($this, true));
 
 		$neo = new Neo4jInterface();
 		if(FALSE !== $neo->isEmailNodeExists($id)) {
-			Log::debug("email node not found. should get created");
 			$neo->storeEmailNode($id);
 		}
 
