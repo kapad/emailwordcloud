@@ -70,6 +70,10 @@ class PushControllerTest extends TestCase {
 
 	}*/
 
+	public function testDummy() {
+		$this->assertTrue(true);
+	}
+
 
 }
 

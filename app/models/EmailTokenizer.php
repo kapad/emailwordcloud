@@ -10,6 +10,7 @@ class EmailTokenizer {
 	private $time;
 	private $cc;
 	private $subject;
+	private $id;
 
 	public function getHeaders() {
 		return $this->headers;
@@ -37,6 +38,10 @@ class EmailTokenizer {
 
 	public function getBody() {
 		return $this->body;
+	}
+
+	public function getId() {
+		return $id;
 	}
 
 	public function __construct($email) {
@@ -100,7 +105,9 @@ class EmailTokenizer {
 
 	private function strippedBody() {
 
-		return preg_replace('/[^a-z0-9\']+/i', '', $this->body);
+		$str = preg_replace('/[^a-z0-9\']+/i', '', $this->body);
+		Log::debug($str);
+		return $str;
 
 	}
 
@@ -109,20 +116,23 @@ class EmailTokenizer {
 		$id = hash('md5', $this->toString());
 
 		$neo = new Neo4jInterface();
-		if(!$neo->isEmailNodeExists($id)) {
+		if(FALSE !== $neo->isEmailNodeExists($id)) {
+			Log::debug("email node not found. should get created");
 			$neo->storeEmailNode($id);
 		}
 
 		$text = explode(' ', $this->strippedBody());
+		Log::debug(var_export($text, true));
 
 		foreach($text as $word) {
 			if(strlen($word) > 3) {
-				if(!$neo->isWordNodeExists($word)) {
+				if(FALSE !== $neo->isWordNodeExists($word)) {
 					$neo->storeWordNode($word);
 				}
 				$neo->storeWordEmailRelation($word, $id);
 			}
 		}
+		$this->id = $id;
 		return $id;
 	}
 
