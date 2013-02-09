@@ -46,43 +46,44 @@ class EmailTokenizer {
 
 	public function __construct($email) {
 		$this->email = $email;
+		Log::debug(var_export($email, true));
 		$this->initialize();
 	}
 
 	private function initialize() {
 
-		if(isset($email->body)) {
-			$this->body = $email->body;
+		if(isset($this->email->text)) {
+			$this->body = $this->email->text;
 		} else {
 			$this->body = '';
 		}
 
-		if(isset($email->subject)) {
-			$this->subject = $email->subject;
+		if(isset($this->email->subject)) {
+			$this->subject = $this->email->subject;
 		} else {
 			$this->subject = '';
 		}
 
-		if(isset($email->headers)) {
-			$this->headers = $email->headers;
+		if(isset($this->email->headers)) {
+			$this->headers = $this->email->headers;
 		}else {
 			$this->headers = '';
 		}
 
-		if(isset($email->from)) {
-			$this->from = $email->from;
+		if(isset($this->email->from)) {
+			$this->from = $this->email->from;
 		} else {
 			$this->from = '';
 		}
 
-		if(isset($email->to)) {
-			$this->to = $email->to;
+		if(isset($this->email->to)) {
+			$this->to = $this->email->to;
 		} else {
 			$this->to = '';
 		}
 
-		if(isset($email->cc)) {
-			$this->cc = $email->cc;
+		if(isset($this->email->cc)) {
+			$this->cc = $this->email->cc;
 		} else {
 			$this->cc = '';
 		}
@@ -94,8 +95,8 @@ class EmailTokenizer {
 	public function toString() {
 		return 
 		$this->headers . ' ' .
-		$this->time->format(DateTime::RSS) . ' ' .
 		$this->subject .  ' ' .
+		$this->time->format(DateTime::RSS) . ' ' .
 		$this->from .  ' ' .
 		$this->to .  ' ' .
 		$this->cc . ' ' .
@@ -105,7 +106,7 @@ class EmailTokenizer {
 
 	private function strippedBody() {
 
-		$str = preg_replace('/[^a-z0-9\']+/i', '', $this->body);
+		$str = preg_replace('/[^a-z0-9\'\s]+/i', '', $this->body);
 		Log::debug($str);
 		return $str;
 
@@ -114,6 +115,9 @@ class EmailTokenizer {
 	public function storeToGraph() {
 
 		$id = hash('md5', $this->toString());
+		Log::debug($id);
+		Log::debug($this->toString());
+		Log::debug(var_export($this, true));
 
 		$neo = new Neo4jInterface();
 		if(FALSE !== $neo->isEmailNodeExists($id)) {

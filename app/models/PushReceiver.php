@@ -10,18 +10,18 @@ class PushReceiver {
 	 */
 	public function doStore( $params ) {
 
-		if ( isset( $this->params->html ) && !empty( $this->params->html ) ) {
-			if ( isset( $params->body ) ) {
-				$params->body = $params->body . $this->convertHTMLBodyToText( $params->html );
+		if ( isset( $params->html ) && !empty( $params->html ) ) {
+			if ( isset( $params->text ) ) {
+				$params->text = $params->text . $this->convertHTMLBodyToText( $params->html );
 			}
-			$params->body = $this->convertHTMLBodyToText( $params->html );
+			$params->text = $this->convertHTMLBodyToText( $params->html );
 		}
 
 		unset( $this->params->html );
 
 		$tokenizer = new EmailTokenizer($params);
 
-		$emailToken = $tokenizer->storeToGraph($id);
+		$emailToken = $tokenizer->storeToGraph();
 
 		return $emailToken;
 
