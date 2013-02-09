@@ -20,4 +20,30 @@ class HomeController extends BaseController {
 		return View::make('hello');
 	}
 
+	public function saveSendGridEmail()
+	{
+		return View::make('hello');
+	}
+
+	public function showWordCloud()
+	{
+		return View::make('showcloud');
+	}
+
+	public function getWords() {
+		$wordsAndWeights = array(
+			array('text'=>"Lorem","weight"=>15),
+			array('text'=>"Rohan","weight"=>9),
+			array('text'=>"Invalid","weight"=>6),
+			array('text'=>"Client","weight"=>7),
+			array('text'=>"Credentials","weight"=>5),
+			array('text'=>"Error","weight"=>10),
+			array('text'=>"Exception","weight"=>8),
+			array('text'=>"API","weight"=>16),
+			array('text'=>"Key","weight"=>30),
+			array('text'=>"Secret","weight"=>25)
+		);
+		return Response::json($wordsAndWeights);
+	}
+
 }

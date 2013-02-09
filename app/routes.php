@@ -15,3 +15,9 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
+
+Route::get('/saveemail','HomeController@saveSendGridEmail');
+
+Route::get('/showwordcloud','HomeController@showWordCloud');
+
+Route::get('/getwords','HomeController@getWords');
