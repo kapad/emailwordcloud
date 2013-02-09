@@ -1,6 +1,8 @@
 {
 	"require": {
-		"laravel/framework": "4.0.*"
+		"laravel/framework": "4.0.*", 
+		"html2text/html2text": "dev-master", 
+		"everyman/neo4jphp":"dev-master"
 	},
 	"autoload": {
 		"classmap": [
