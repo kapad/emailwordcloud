@@ -32,7 +32,7 @@ class Neo4jInterface{
 	}
 	
 	public function __construct(){
-		//Currently hard-coding the neo4j server to localhost port 7575.
+		//TODO: Currently hard-coding the neo4j server to localhost port 7474.
 		//This needs to be picked up from a config file.
 		$this->_client = new Client('localhost', 7474) ;
 		$this->_wordIndex = new NodeIndex($this->_client, 'words');
@@ -47,7 +47,7 @@ class Neo4jInterface{
 	 * This function stores the word node and links it to the email node
 	 * @param  String $word       
 	 * @param  String $emailToken 
-	 * @return NodeObject $wordNode
+	 * @return Node $wordNode
 	 */
 	public function storeWordNode($word){
 		if(empty($word))
@@ -68,7 +68,7 @@ class Neo4jInterface{
 	/**
 	 * This function stores the email as a node
 	 * @param  String $emailToken 
-	 * @return NodeObject $emailNode
+	 * @return Node $emailNode
 	 */
 	public function storeEmailNode($emailToken){
 		if(empty($emailToken)) throw new Exception("Empty email token sent. Throwing exception", 1);
@@ -140,7 +140,7 @@ class Neo4jInterface{
 	/**
 	 * This function checks if the word node exists in Neo4j DB
 	 * @param  String  $word 
-	 * @return boolean       
+	 * @return boolean / Node      
 	 */
 	public function isWordNodeExists($word){
 		if(empty($word)) throw new Exception("Empty word given. Not allowed", 1000);
@@ -153,7 +153,7 @@ class Neo4jInterface{
 	/**
 	 * This function checks if the email node exists in Neo4j DB
 	 * @param  String  $emailToken 
-	 * @return boolean             
+	 * @return boolean / Node            
 	 */
 	public function isEmailNodeExists($emailToken){
 		if(empty($emailToken)) throw new Exception("Empty email token given. Not allowed", 1001);
