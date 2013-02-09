@@ -52,25 +52,15 @@ class Neo4jInterface{
 		if(empty($word))
 			throw new Exception("Empty word or email token passed. Throwing exception", 1);
 			
-		// $emailNode = $this->storeEmailNode($emailToken);
-
 		$wordNode = $this->isWordNodeExists($word);
 		if(!$wordNode){
-			$wordNode = $this->_client->makeNode() ;
-			$wordNode->setProperty('type', 'word');
-			$wordNode->setProperty('value', $word);
-			$wordNode->save() ;
+			$wordNode = $this->_client->makeNode()
+							 ->setProperty('type', 'word')
+							 ->setProperty('value', $word)
+							 ->save() ;
 
-			// $emailNode->relateTo($wordNode, 'CONTAINS')->save() ;
 			$this->_wordIndex->add($wordNode,'words',$wordNode->getProperty('value'));
-			//TODO: Set the count property of the relationship CONTAINS
-		}else{
-			print_r('Here');
-			//TODO: Get the word node and the relationship property count of CONTAINS
-			//Increment the count
-			//Set the relationship count with incremented value
 		}
-
 		return $wordNode;
 	}
 
@@ -88,7 +78,10 @@ class Neo4jInterface{
 			return $emailNode;
 		}
 
-		$emailNode = $this->_client->makeNode()->setProperty('token',$emailToken)->save();
+		$emailNode = $this->_client->makeNode()
+						  ->setProperty('token',$emailToken)
+						  ->setProperty('type', 'email')
+						  ->save();
 		$this->_emailIndex->add($emailNode,'emails',$emailNode->getProperty('token'));
 		return $emailNode ;
 	}
@@ -117,6 +110,26 @@ class Neo4jInterface{
 	}
 
 	/**
+	 * This function returns the relationship ID (if exists) between emailNode and wordNode
+	 * @param  Integer $emailNode
+	 * @param  Integer $wordNode 
+	 * @return Integer              
+	 */
+	public function getRelationshipBetweenEmailAndWord($emailNode,$wordNode){
+		if(empty($emailNode) || empty($wordNode))
+			throw new Exception("Empty email or word node ID given. Not allowed", 1);
+		// var_dump($wordNode);
+		// $emailNode = $this->_client->getNode(23);
+		// $wordNode = $this->_client->getNode(24);
+		print_r("Here");
+		var_dump($emailNode);
+		$path = $emailNode->findPathsTo($wordNode, 'CONTAINS', Relationship::DirectionOut)
+						  ->setMaxDepth(1)
+						  ->getSinglePath() ;
+		// var_dump($path);
+	}
+
+	/**
 	 * This function checks if the word node exists in Neo4j DB
 	 * @param  String  $word 
 	 * @return boolean       
@@ -124,7 +137,7 @@ class Neo4jInterface{
 	public function isWordNodeExists($word){
 		if(empty($word)) throw new Exception("Empty word given. Not allowed", 1000);
 		
-		$wordNode = $this->_wordIndex->find('value',$word );
+		$wordNode = $this->_wordIndex->find('words',$word );
 		return (empty($wordNode)) ? false:$wordNode ;
 	}
 
@@ -136,7 +149,7 @@ class Neo4jInterface{
 	public function isEmailNodeExists($emailToken){
 		if(empty($emailToken)) throw new Exception("Empty email token given. Not allowed", 1001);
 		
-		$emailNode = $this->_emailIndex->find('token',$emailToken);
+		$emailNode = $this->_emailIndex->find('emails',$emailToken);
 		return (empty($emailNode)) ? false:$emailNode ;
 	}
 }
