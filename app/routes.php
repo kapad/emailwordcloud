@@ -12,9 +12,7 @@
 */
 
 
-Route::resource( '/push', 'PushController', array(
-		'only'=>array( 'store' )
-	) );
+Route::any( '/push', 'PushController@store');
 
 Route::get('/', function()
 {
