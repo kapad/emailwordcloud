@@ -49,4 +49,9 @@ class Neo4jInterfaceTest extends TestCase {
 		$result = $this->_interface->storeWordEmailRelation('testWord','testNode');
 		$this->assertTrue($result);
 	}
+	
+	public function testgetWordCount(){
+		$result = $this->_interface->getWordCount() ;
+		$this->assertNotNull($result);
+	}
 }
