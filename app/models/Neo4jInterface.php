@@ -35,8 +35,11 @@ class Neo4jInterface{
 		//This needs to be picked up from a config file.
 		$this->_client = new Client('localhost', 7474) ;
 		$this->_wordIndex = new NodeIndex($this->_client, 'words');
+		$this->_wordIndex->save();
 		$this->_emailIndex = new NodeIndex($this->_client, 'emails');
+		$this->_emailIndex->save();
 		$this->_containsIndex = new RelationshipIndex($this->_client,'contains');
+		$this->_containsIndex->save();
 	}
 
 	/**
@@ -45,21 +48,24 @@ class Neo4jInterface{
 	 * @param  String $emailToken 
 	 * @return NodeObject $wordNode
 	 */
-	public function storeWordNode($word, $emailToken){
-		if(empty($word) || empty($emailToken))
+	public function storeWordNode($word){
+		if(empty($word))
 			throw new Exception("Empty word or email token passed. Throwing exception", 1);
 			
-		$emailNode = $this->storeEmailNode($emailToken);
+		// $emailNode = $this->storeEmailNode($emailToken);
 
-		if(!$this->isWordNodeExists($word)){
-			$wordNode = $client->makeNode() ;
+		$wordNode = $this->isWordNodeExists($word);
+		if(!$wordNode){
+			$wordNode = $this->_client->makeNode() ;
 			$wordNode->setProperty('type', 'word');
 			$wordNode->setProperty('value', $word);
 			$wordNode->save() ;
 
-			$emailNode->relateTo($wordNode, 'CONTAINS')->save() ;
+			// $emailNode->relateTo($wordNode, 'CONTAINS')->save() ;
+			$this->_wordIndex->add($wordNode,'words',$wordNode->getProperty('value'));
 			//TODO: Set the count property of the relationship CONTAINS
 		}else{
+			print_r('Here');
 			//TODO: Get the word node and the relationship property count of CONTAINS
 			//Increment the count
 			//Set the relationship count with incremented value
@@ -77,11 +83,37 @@ class Neo4jInterface{
 		if(empty($emailToken)) throw new Exception("Empty email token sent. Throwing exception", 1);
 		
 		if(is_null($this->_emailIndex)) throw new Exception("Unable to find the email index", 1);
-
-		if($this->isEmailNodeExists($emailToken))		
+		$emailNode = $this->isEmailNodeExists($emailToken) ;
+		if($emailNode) {
 			return $emailNode;
+		}
 
-		return $client->makeNode()->setProperty('token',$emailToken)->save();
+		$emailNode = $this->_client->makeNode()->setProperty('token',$emailToken)->save();
+		$this->_emailIndex->add($emailNode,'emails',$emailNode->getProperty('token'));
+		return $emailNode ;
+	}
+
+	/**
+	 * This function stores the relationship between a word and email node
+	 * @param  String $word       
+	 * @param  String $emailToken 
+	 * @return boolean             
+	 */
+	public function storeWordEmailRelation($word,$emailToken){
+		if(empty($word) || empty($emailToken)) 
+			throw new Exception("Empty word or email token provided. Not allowed", 1);
+		
+		$emailNode = $this->isEmailNodeExists($emailToken);
+		if(!$emailNode)
+			$emailNode = $this->storeEmailNode($emailToken);
+
+		$wordNode = $this->isWordNodeExists($word);
+		if(!$wordNode)
+			$wordNode = $this->storeWordNode($word);
+
+		//TODO: Check if the emailNode is connected to the wordNode
+		$emailNode->relateTo($wordNode,'CONTAINS')->setProperty('count',1)->save();
+		return true;
 	}
 
 	/**
@@ -90,8 +122,10 @@ class Neo4jInterface{
 	 * @return boolean       
 	 */
 	public function isWordNodeExists($word){
-		$wordNode = $this->_wordIndex->queryOne('value: '.$word );
-		return (is_null($wordNode)) ? false:true ;
+		if(empty($word)) throw new Exception("Empty word given. Not allowed", 1000);
+		
+		$wordNode = $this->_wordIndex->find('value',$word );
+		return (empty($wordNode)) ? false:$wordNode ;
 	}
 
 	/**
@@ -100,7 +134,9 @@ class Neo4jInterface{
 	 * @return boolean             
 	 */
 	public function isEmailNodeExists($emailToken){
-		$emailNode = $this->_emailIndex->queryOne('token: '.$emailToken);
-		return (is_null($emailNode)) ? false:true ;
+		if(empty($emailToken)) throw new Exception("Empty email token given. Not allowed", 1001);
+		
+		$emailNode = $this->_emailIndex->find('token',$emailToken);
+		return (empty($emailNode)) ? false:$emailNode ;
 	}
 }
