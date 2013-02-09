@@ -50,7 +50,18 @@ class Neo4jInterface{
 	 * @return Array            
 	 */
 	public function getWordCount($wordArray = null){
-		$queryString = "start n=node(*)
+		$wordNodeList = array(); 		
+		if(is_array($wordArray)){
+			foreach ($wordArray as $word) {
+				$wordNode = $this->isWordNodeExists($word);
+				if($wordNode)
+					array_push($wordNodeList,$wordNode->getId());
+			}
+			$wordNodeString = (count($wordNodeList))?implode(',', $wordNodeList) : "*";
+		}else{
+			$wordNodeString = "*";
+		}
+		$queryString = "start n=node($wordNodeString)
 						match n<-[r]-email-[s]->word
 						where n.type='word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
 						return sum(s.count), word.value";
@@ -168,7 +179,6 @@ class Neo4jInterface{
 		if(empty($word)) throw new Exception("Empty word given. Not allowed", 1000);
 		
 		$wordNode = $this->_wordIndex->findOne('words',$word );
-		// print_r($wordNode);
 		return (empty($wordNode)) ? false:$wordNode ;
 	}
 

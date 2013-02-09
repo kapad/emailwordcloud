@@ -43,7 +43,7 @@ class HomeController extends BaseController {
 		// 	array('text'=>"Key","weight"=>30),
 		// 	array('text'=>"Secret","weight"=>25)
 		// );
-		$neoModel = App:make('Neo4jModel');
+		$neoModel = new Neo4jModel();
 		//TODO: Take a word as an input and use that to filter the word count as well.
 		$result = $neoModel->getWordCount() ;
 		return Response::json($result);

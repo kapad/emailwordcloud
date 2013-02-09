@@ -50,8 +50,13 @@ class Neo4jInterfaceTest extends TestCase {
 		$this->assertTrue($result);
 	}
 	
-	public function testgetWordCount(){
+	public function testgetWordCountNoWords(){
 		$result = $this->_interface->getWordCount() ;
+		$this->assertNotNull($result);
+	}
+
+	public function testgetWordCountWordArray(){
+		$result = $this->_interface->getWordCount(array('foo','bar'));
 		$this->assertNotNull($result);
 	}
 }
