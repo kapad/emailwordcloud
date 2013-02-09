@@ -11,6 +11,34 @@ class EmailTokenizer {
 	private $cc;
 	private $subject;
 
+	public function getHeaders() {
+		return $this->headers;
+	}
+
+	public function getFrom() {
+		return $this->from;
+	}
+
+	public function getTo() {
+		return $this->to;
+	}
+
+	public function getTime() {
+		return $this->time;
+	}
+
+	public function getSubject() {
+		return $this->subject;
+	}
+
+	public function getCC() {
+		return $this->cc;
+	}
+
+	public function getBody() {
+		return $this->body;
+	}
+
 	public function __construct($email) {
 		$this->email = $email;
 		$this->initialize();
@@ -78,7 +106,7 @@ class EmailTokenizer {
 
 	public function storeToGraph() {
 
-		$id = hash('md5', $tokenizer->toString());
+		$id = hash('md5', $this->toString());
 
 		$neo = new Neo4jInterface();
 		if(!$neo->isEmailNodeExists($id)) {
