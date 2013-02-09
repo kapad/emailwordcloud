@@ -40,10 +40,10 @@ class EmailTokenizer {
 		return $this->body;
 	}
 
-	public function getId() {
-		return $id;
+	public function getId(){
+		return $this->id ;
 	}
-
+	
 	public function __construct($email) {
 		$this->email = $email;
 		Log::debug(var_export($email, true));

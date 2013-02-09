@@ -49,7 +49,7 @@ class Neo4jInterface{
 	 * @param  Array $wordArray 
 	 * @return Array            
 	 */
-	public function getWordCount($wordArray = null){
+	public function getWordCountByWordsFilter($wordArray = null){
 		$wordNodeList = array(); 		
 		if(is_array($wordArray)){
 			foreach ($wordArray as $word) {
@@ -101,26 +101,77 @@ class Neo4jInterface{
 
 	/**
 	 * This function stores the email as a node
-	 * @param  String $emailToken 
+	 * @param  EmailTokenizer $emailToken 
 	 * @return Node $emailNode
 	 */
-	public function storeEmailNode($emailToken){
-		if(empty($emailToken)) throw new Exception("Empty email token sent. Throwing exception", 1);
+	public function storeEmailNode($email){
+		if(empty($email)) throw new Exception("Empty email token sent. Throwing exception", 1);
 		
 		if(is_null($this->_emailIndex)) throw new Exception("Unable to find the email index", 1);
-		$emailNode = $this->isEmailNodeExists($emailToken) ;
-		if($emailNode) {
-			return $emailNode;
+		
+		$emailToken = $email->getId() ;
+		$emailNodeArray = $this->isEmailNodeExists('token',$emailToken) ;
+		if(count($emailNodeArray)) {
+			return $emailNodeArray[0];
 		}
 
+		$timestamp = ($email->getTime()) ? : null ;
+		$from = ($email->getFrom()) ? : null;
+		$to = ($email->getTo()) ? : null ;
+		$cc = ($email->getCC()) ? : null;
+
 		$emailNode = $this->_client->makeNode()
-						  ->setProperty('token',$emailToken)
 						  ->setProperty('type', 'email')
-						  ->save();
+						  ->setProperty('token',$emailToken);
+		if($timestamp)						  
+			$emailNode->setProperty('time',$timestamp);
+		if($from)
+			$emailNode->setProperty('from', $from);
+		if($to)
+			$emailNode->setProperty('to',$to);
+		if($cc)
+			$emailNode->setProperty('cc',$cc);
+		$emailNode->save();
+
+		//Indexing the properties for the email node so that they can be searched easily later
 		$this->_emailIndex->add($emailNode,'token',$emailNode->getProperty('token'));
+		if($timestamp)						  
+			$this->_emailIndex->add($emailNode,'time',$emailNode->getProperty('time'))
+		if($from)
+			$this->_emailIndex->add($emailNode,'from',$emailNode->getProperty('from'))
+		if($to)
+			$this->_emailIndex->add($emailNode,'to',$emailNode->getProperty('to'))
+		if($cc)
+			$this->_emailIndex->add($emailNode,'cc',$emailNode->getProperty('cc'));
+
 		return $emailNode ;
 	}
 
+	/**
+	 * This function stores the email as a node based on the token
+	 * @param  String $emailToken 
+	 * @return Node $emailNode
+	 */
+	public function storeEmailNodeByToken($emailToken){
+		if(empty($emailToken)) throw new Exception("Empty email token sent. Throwing exception", 1);
+		
+		if(is_null($this->_emailIndex)) throw new Exception("Unable to find the email index", 1);
+		
+		$emailNodeArray = $this->isEmailNodeExists('token',$emailToken) ;
+		if(count($emailNodeArray)) {
+			return $emailNodeArray[0];
+		}
+
+		$emailNode = $this->_client->makeNode()
+						  ->setProperty('type', 'email')
+						  ->setProperty('token',$emailToken);
+		$emailNode->save();
+
+		//Indexing the properties for the email node so that they can be searched easily later
+		$this->_emailIndex->add($emailNode,'token',$emailNode->getProperty('token'));
+
+		return $emailNode ;
+	}
 	/**
 	 * This function stores the relationship between a word and email node
 	 * @param  String $word       
@@ -131,9 +182,10 @@ class Neo4jInterface{
 		if(empty($word) || empty($emailToken)) 
 			throw new Exception("Empty word or email token provided. Not allowed", 1);
 		
-		$emailNode = $this->isEmailNodeExists($emailToken);
-		if(!$emailNode)
-			$emailNode = $this->storeEmailNode($emailToken);
+		$emailNodeArray = $this->isEmailNodeExists('token',$emailToken);
+		if(!count($emailNodeArray)){
+			$emailNode = $this->storeEmailNodeByToken($emailToken);
+		}
 
 		$wordNode = $this->isWordNodeExists($word);
 		if(!$wordNode)
@@ -185,13 +237,14 @@ class Neo4jInterface{
 
 	/**
 	 * This function checks if the email node exists in Neo4j DB
-	 * @param  String  $emailToken 
+	 * @param  String  $key This is the key over which the index needs to be searched
+	 * @param String $value This is the value of the property
 	 * @return boolean / Node            
 	 */
-	public function isEmailNodeExists($emailToken){
+	public function isEmailNodeExists($key,$value){
 		if(empty($emailToken)) throw new Exception("Empty email token given. Not allowed", 1001);
 		
-		$emailNode = $this->_emailIndex->findOne('token',$emailToken);
+		$emailNode = $this->_emailIndex->query("$key:$value");
 		return (empty($emailNode)) ? false:$emailNode ;
 	}
 }
