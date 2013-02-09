@@ -12,13 +12,7 @@ class Neo4jInterfaceTest extends TestCase {
 		$serverInfo = $client->getServerInfo();
 		$this->assertNotContains('Body',$serverInfo);
 	}
-	// public function testEmailNodeStore(){
-	// 	$interface = new Neo4jInterface() ;
-	// 	$emailNode = $interface->storeEmailNode('test123');
-	// 	print_r($emailNode);
-	// 	$this->assertTrue(true);
-	// }
-	
+
 	public function testIsEmailNodeNotExists(){
 		$this->assertFalse($this->_interface->isEmailNodeExists('NotEmailNode'));
 	}
@@ -52,8 +46,7 @@ class Neo4jInterfaceTest extends TestCase {
 	}
 
 	public function teststoreWordEmailRelation(){
-		// $wordNode = $this->_interface->isWordNodeExists('testWord');
-		// $emailNode = $this->_interface->isEmailNodeExists('testNode');
-		$this->_interface->storeWordEmailRelation('testWord','testNode');
+		$result = $this->_interface->storeWordEmailRelation('testWord','testNode');
+		$this->assertTrue($result);
 	}
 }
