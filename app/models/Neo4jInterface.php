@@ -4,6 +4,7 @@ use Everyman\Neo4j\Client,
 	Everyman\Neo4j\Relationship,
 	Everyman\Neo4j\Index\RelationshipIndex,
 	Everyman\Neo4j\Node,
+	Everyman\Neo4j\Path,
 	Everyman\Neo4j\Cypher;
 /**
  * This class interfaces with the Neo4j db
@@ -104,8 +105,13 @@ class Neo4jInterface{
 		if(!$wordNode)
 			$wordNode = $this->storeWordNode($word);
 
-		//TODO: Check if the emailNode is connected to the wordNode
-		$emailNode->relateTo($wordNode,'CONTAINS')->setProperty('count',1)->save();
+		$relation = $this->getRelationshipBetweenEmailAndWord($emailNode,$wordNode);
+		if(is_null($relation)){
+			$emailNode->relateTo($wordNode,'CONTAINS')->setProperty('count',1)->save();	
+		}else{
+			$count = $relation->getProperty('count');
+			$relation->setProperty('count',++$count)->save() ;
+		}
 		return true;
 	}
 
@@ -118,10 +124,17 @@ class Neo4jInterface{
 	public function getRelationshipBetweenEmailAndWord($emailNode,$wordNode){
 		if(empty($emailNode) || empty($wordNode))
 			throw new Exception("Empty email or word node ID given. Not allowed", 1);
+
 		$path = $emailNode->findPathsTo($wordNode, 'CONTAINS', Relationship::DirectionOut)
 						  ->setMaxDepth(1)
 						  ->getSinglePath() ;
-		var_dump($path);
+		if(is_null($path))
+			return null ;
+
+		$path->setContext(Path::ContextRelationship);
+		foreach ($path as $rel) {
+			return $rel ;
+		}
 	}
 
 	/**

@@ -48,11 +48,12 @@ class Neo4jInterfaceTest extends TestCase {
 	public function testgetRelationshipBetweenEmailAndWord(){
 		$wordNode = $this->_interface->isWordNodeExists('testWord');
 		$emailNode = $this->_interface->isEmailNodeExists('testNode');
-		// print_r('Word');
-		// print_r($wordNode); 
-		// print_r('Email');
-		// print_r($emailNode);
-		// $path = $emailNode->findPathsTo($wordNode)->getPaths();
 		$this->_interface->getRelationshipBetweenEmailAndWord($emailNode,$wordNode);
+	}
+
+	public function teststoreWordEmailRelation(){
+		// $wordNode = $this->_interface->isWordNodeExists('testWord');
+		// $emailNode = $this->_interface->isEmailNodeExists('testNode');
+		$this->_interface->storeWordEmailRelation('testWord','testNode');
 	}
 }
