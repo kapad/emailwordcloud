@@ -31,7 +31,7 @@ class HomeController extends BaseController {
 	}
 
 	public function getWords() {
-		// $wordsAndWeights = array(
+		// or$wordsAndWeights = array(
 		// 	array('text'=>"Lorem","weight"=>15),
 		// 	array('text'=>"Rohan","weight"=>9),
 		// 	array('text'=>"Invalid","weight"=>6),
@@ -44,9 +44,16 @@ class HomeController extends BaseController {
 		// 	array('text'=>"Secret","weight"=>25)
 		// );
 		$neoModel = new Neo4jModel();
-		//TODO: Take a word as an input and use that to filter the word count as well.
-		$result = $neoModel->getWordCount() ;
-		return Response::json($result);
+		if(!Input::has('data')){
+			//TODO: Take a word as an input and use that to filter the word count as well.
+			$result = $neoModel->getWordCount();
+			return Response::json($result);
+		}
+		else {
+			$wordArr = Input::all();
+			$result = $neoModel->getWordCount($wordArr['data']);
+			return Response::json($result);
+		}
 	}
 
 }

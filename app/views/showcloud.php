@@ -3,7 +3,7 @@
     <title>Email Word Cloud</title>
     <link rel="stylesheet" type="text/css" href="/css/jqcloud.css" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="/js/jqcloud-1.0.2.js"></script>
     <script type="text/javascript">
       /*!
@@ -32,10 +32,43 @@
     // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
 	    getWords(function(data){
 	    	console.log("inside getwords callback");
-		    $("#example").jQCloud(data);    	
+	    	var wordArr = [];
+		    $.each(data,function(index,obj){
+		    	obj.link = "#";
+		    	wordArr.push(obj);
+		    });
+		    console.log(wordArr);
+		    $("#example").jQCloud(wordArr);    	
 	    });
+
+	    function setRelatedWords(words){
+	    	$.ajax({
+	    		type:"GET",
+	    		// dataType: "json",
+	    		url : "/getwords",
+	    		data : {data:words},
+	    		success :function(data) {
+	    			$.each(data,function(index,obj){
+			    	obj.link = "#";
+			    	wordArr.push(obj);
+			    });	
+	    		$("#example").jQCloud(wordArr);
+	    		}
+	    	});
+	    }
     // $("#example").jQCloud(word_array);    	
-  });
+    	$(document).on("click",".jqcloud a", function(e){
+    		e.preventDefault();
+    		var words = [];
+    		var heading = $(".wordsHeading").text().split('+');
+    		words.push($(this).text());
+    		$.each(heading,function(i,d){
+    			if(d!=="All") words.push(d);
+    		});
+    		$(".wordsHeading").text(words.join('+'));
+    		setRelatedWords(words);
+    	});
+	});
 </script>
 </head>
 <body>
@@ -47,6 +80,7 @@
 		</div>
 		<div class="row">
 			<div class="span12">
+				<h2 class="wordsHeading">All</h2>
 			    <div id="example" style="width: 700px; height: 350px;"></div>
 			</div>
 		</div>
