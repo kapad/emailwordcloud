@@ -1,4 +1,40 @@
+######################
+## Laravel specific ##
+######################
 /vendor
 composer.phar
 composer.lock
 .DS_Store
+
+
+######################
+## Sublime specific ##
+######################
+*.sublime-project
+*.sublime-workspace
+.codeintel/*
+*.phptidy-cache
+
+
+######################
+## Eclipse specific ##
+######################
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+
+# PDT-specific
+.buildpath
+
