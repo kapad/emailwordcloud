@@ -134,11 +134,11 @@ class EmailTokenizer {
 		foreach($text as $word) {
 			if(strlen($word) > 3) {
 				Log::debug("Processing word: $word");
-				$wordNode = $neo->isWordNodeExists($word);
-				if(!$neo->isWordNodeExists($word)) {
-					Log::debug("Storing the word: $word");
-					$neo->storeWordNode($word);
-				}
+				// $wordNode = $neo->isWordNodeExists($word);
+				// if(!$neo->isWordNodeExists($word)) {
+				// 	Log::debug("Storing the word: $word");
+				// 	$neo->storeWordNode($word);
+				// }
 				Log::debug("Storing the relation between $word and $id");
 				$neo->storeWordEmailRelation($word, $id);
 			}
