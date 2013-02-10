@@ -88,10 +88,12 @@ class Neo4jInterface{
 						return tagcount, word.value, emailCount";
 		
 		$query = new Query($this->_client,$queryString);
+		$query_time_start = microtime(true);
 		$result = $query->getResultSet() ;
+		$query_time_end = microtime(true);
 		
 		$resultArray = array();
-		
+		$resultArray['query_time'] = $query_time_end-$query_time_start ;
 		foreach ($result as $row) {
 			$wordArray = array( 'weight' => $row[0],
 								'text' => $row[1]);
