@@ -31,18 +31,6 @@ class HomeController extends BaseController {
 	}
 
 	public function getWords() {
-		// or$wordsAndWeights = array(
-		// 	array('text'=>"Lorem","weight"=>15),
-		// 	array('text'=>"Rohan","weight"=>9),
-		// 	array('text'=>"Invalid","weight"=>6),
-		// 	array('text'=>"Client","weight"=>7),
-		// 	array('text'=>"Credentials","weight"=>5),
-		// 	array('text'=>"Error","weight"=>10),
-		// 	array('text'=>"Exception","weight"=>8),
-		// 	array('text'=>"API","weight"=>16),
-		// 	array('text'=>"Key","weight"=>30),
-		// 	array('text'=>"Secret","weight"=>25)
-		// );
 		$neoModel = new Neo4jModel();
 		if(!Input::has('data')){
 			//TODO: Take a word as an input and use that to filter the word count as well.

@@ -25,3 +25,7 @@ Route::get('/showwordcloud','HomeController@showWordCloud');
 
 Route::get('/getwords','HomeController@getWords');
 
+Route::get('/showwordcloud2', function() {
+	return View::make('showcloud2');
+});
+
