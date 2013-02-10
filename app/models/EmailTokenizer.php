@@ -94,6 +94,10 @@ class EmailTokenizer {
 		}
 
 		$this->time = date('Y-m-d H:i:s');
+		// $now = strtotime(date('Y-m-d H:i:s'));
+		// $mt = mt_rand(1, 99999999);
+		// $rand = floatval('0.' . $mt);
+		// $this->time = date('Y-m-d H:i:s', ($now*$rand));
 	}
 
 	public function toString() {
