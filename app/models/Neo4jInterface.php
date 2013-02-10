@@ -46,26 +46,46 @@ class Neo4jInterface{
 
 	/**
 	 * This function returns the array of words and their occurrence count
-	 * @param  Array $wordArray 
+	 * @param  Array $wordArray['words' => ['word',word],
+	 *                          'startTime' => '<From Time>',
+	 *                          'endTime' => '<End Time>',
+	 *                          'text' => '<email id text>'
+	 *                         ] 
 	 * @return Array            
 	 */
-	public function getWordCountByWordsFilter($wordArray = null){
-		$wordNodeList = array(); 		
-		if(is_array($wordArray)){
-			foreach ($wordArray as $word) {
-				$wordNode = $this->isWordNodeExists($word);
-				if($wordNode)
-					array_push($wordNodeList,$wordNode->getId());
+	public function getWordCountByFilter($filterArray = null){
+		$queryString = '';
+		$wordNodeString = '*';
+		if(is_array($filterArray) && count($filterArray)){
+			if(array_key_exists('words', $filterArray) && count($filterArray['words'])){
+				$wordNodeString = implode(',', $filterArray['words']);
+			}else{
+				$wordNodeString = "*";	
 			}
-			$wordNodeString = (count($wordNodeList))?implode(',', $wordNodeList) : "*";
-		}else{
-			$wordNodeString = "*";
 		}
 
-		$queryString = "start n=node($wordNodeString)
+		$queryString = "start n=node:words('value:($wordNodeString)') 
 						match n<-[r]-email-[s]->word
-						where n.type?= 'word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS'
-						return sum(s.count), word.value";
+						where n.type?= 'word' and type(r) = 'CONTAINS' and type(s) = 'CONTAINS' " ;
+
+		if(is_array($filterArray) && count($filterArray)){
+			if(array_key_exists('startTime', $filterArray)){
+				$queryString.=" and email.date ?> ".$filterArray['startTime'];
+			}
+			if(array_key_exists('endTime', $filterArray)){
+				$queryString.=" and email.date ?< ".$filterArray['endTime'];	
+			}
+			if(array_key_exists('text', $filterArray)) {
+				$queryString.=" and (email.to ?=~ '.*".$filterArray['text'].".*'
+							   or email.from ?=~ '.*".$filterArray['text'].".*'
+							   or email.cc ?=~ '.*".$filterArray['text'].".*'
+							  )";
+			}
+		}
+
+		$queryString .= " with sum(s.count) as tagcount, word
+						order by tagcount desc
+						return tagcount, word.value";
 		$query = new Query($this->_client,$queryString);
 		$result = $query->getResultSet() ;
 		$resultArray = array();

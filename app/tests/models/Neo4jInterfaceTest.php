@@ -61,13 +61,29 @@ class Neo4jInterfaceTest extends TestCase {
 		$this->assertTrue($result);
 	}
 	
-	public function testgetWordCountByWordsFilterNoWords(){
-		$result = $this->_interface->getWordCountByWordsFilter() ;
+	public function testgetWordCountByFilterNoWords(){
+		$result = $this->_interface->getWordCountByFilter() ;
 		$this->assertNotNull($result);
 	}
 
-	public function testgetWordCountByWordsFilterWordArray(){
-		$result = $this->_interface->getWordCountByWordsFilter(array('testWord'));
+	public function testgetWordCountByFilterWordArray(){
+		$result = $this->_interface->getWordCountByFilter(array('words'=>array('testWord')));
+		$this->assertNotNull($result);
+	}
+
+	public function testgetWordCountByFilterText(){
+		$result = $this->_interface->getWordCountByFilter(
+										array('words'=>array('species'),
+											  'text' => 'rohan')
+											);
+		$this->assertNotNull($result);
+	}
+
+	public function testgetWordCountByFilterStartTime(){
+		$result = $this->_interface->getWordCountByFilter(
+										array('startTime' => '2013-04-01',
+											  'text' => 'rohan')
+											);
 		$this->assertNotNull($result);
 	}
 
@@ -85,4 +101,6 @@ class Neo4jInterfaceTest extends TestCase {
 		$emailNode = $this->_interface->storeEmailNode($emailTokenizer);
 		$this->assertTrue($emailNode instanceof Node);
 	}
+
+
 }
