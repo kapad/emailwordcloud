@@ -93,14 +93,16 @@ class Neo4jInterface{
 		$query_time_end = microtime(true);
 		
 		$resultArray = array();
+		$wordArray = array() ;
 		$resultArray['query_time'] = $query_time_end-$query_time_start ;
 		foreach ($result as $row) {
-			$wordArray = array( 'weight' => $row[0],
+			$wordData = array( 'weight' => $row[0],
 								'text' => $row[1]);
-			array_push($resultArray, $wordArray);
+			array_push($wordArray, $wordData);
 			//Getting the e-mails count. This is the same value in all the rows
 			$resultArray['email_count'] = $row[2];
 		}
+		$resultArray['words'] = $wordArray;
 		$resultArray['word_count'] = count($resultArray)-1 ;
 		return $resultArray;
 	}
