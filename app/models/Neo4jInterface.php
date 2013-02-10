@@ -86,6 +86,8 @@ class Neo4jInterface{
 		$queryString .= " with sum(s.count) as tagcount, word, count(email) as emailCount
 						order by tagcount desc
 						return tagcount, word.value, emailCount";
+
+		Log::debug($queryString);
 		
 		$query = new Query($this->_client,$queryString);
 		$query_time_start = microtime(true);
