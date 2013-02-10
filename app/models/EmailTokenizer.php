@@ -52,6 +52,12 @@ class EmailTokenizer {
 
 	private function initialize() {
 
+		if(isset($this->email->id)) {
+			$this->id = $this->email->id;
+		} else {
+			$this->id = '';
+		}
+
 		if(isset($this->email->text)) {
 			$this->body = $this->email->text;
 		} else {
@@ -88,15 +94,14 @@ class EmailTokenizer {
 			$this->cc = '';
 		}
 
-		$this->time = new DateTime();
-
+		$this->time = date('Y-m-d H:i:s');
 	}
 
 	public function toString() {
 		return 
 		$this->headers . ' ' .
 		$this->subject .  ' ' .
-		$this->time->format(DateTime::RSS) . ' ' .
+		$this->time. ' ' .
 		$this->from .  ' ' .
 		$this->to .  ' ' .
 		$this->cc . ' ' .
@@ -115,28 +120,31 @@ class EmailTokenizer {
 	public function storeToGraph() {
 
 		$id = hash('md5', $this->toString());
-		Log::debug($id);
-		Log::debug($this->toString());
+		$this->id = $id;
+		Log::debug('Got the ID: '.$id);
 		Log::debug(var_export($this, true));
 
 		$neo = new Neo4jInterface();
-		if(FALSE !== $neo->isEmailNodeExists($id)) {
+		if(FALSE !== $neo->isEmailNodeExists('token',$id)) {
 			Log::debug("email node not found. should get created");
-			$neo->storeEmailNode($id);
+			$neo->storeEmailNode($this);
 		}
 
 		$text = explode(' ', $this->strippedBody());
-		Log::debug(var_export($text, true));
 
 		foreach($text as $word) {
 			if(strlen($word) > 3) {
-				if(FALSE !== $neo->isWordNodeExists($word)) {
+				Log::debug("Processing word: $word");
+				$wordNode = $neo->isWordNodeExists($word);
+				if(!$neo->isWordNodeExists($word)) {
+					Log::debug("Storing the word: $word");
 					$neo->storeWordNode($word);
 				}
+				Log::debug("Storing the relation between $word and $id");
 				$neo->storeWordEmailRelation($word, $id);
 			}
 		}
-		$this->id = $id;
+		
 		return $id;
 	}
 
