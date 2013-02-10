@@ -10,6 +10,8 @@ class PushReceiver {
 	 */
 	public function doStore( $params ) {
 
+		// $params = $this->parseOutParams( $post );
+
 		if ( isset( $params->html ) && !empty( $params->html ) ) {
 			if ( isset( $params->text ) ) {
 				$params->text = $params->text . $this->convertHTMLBodyToText( $params->html );
@@ -19,7 +21,7 @@ class PushReceiver {
 
 		unset( $this->params->html );
 
-		$tokenizer = new EmailTokenizer($params);
+		$tokenizer = new EmailTokenizer( $params );
 
 		$emailToken = $tokenizer->storeToGraph();
 

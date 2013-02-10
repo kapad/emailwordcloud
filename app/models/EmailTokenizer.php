@@ -120,7 +120,7 @@ class EmailTokenizer {
 		}
 
 		$text = explode(' ', $this->strippedBody());
-		Log::debug(var_export($text, true));
+		// Log::debug(var_export($text, true));
 
 		foreach($text as $word) {
 			if(strlen($word) > 3) {
