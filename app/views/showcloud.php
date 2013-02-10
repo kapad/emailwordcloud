@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Email Word Cloud</title>
     <link rel="stylesheet" type="text/css" href="/css/jqcloud.css" />
     <link rel="stylesheet" type="text/css" href="/css/iThing-min.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.2.2.1.css" />
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.2.2.1.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.min.css" />
 
     <script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
@@ -86,6 +87,15 @@
     			dataObj.text = $("#userText").val();
     			dataObj.getWords();
     		}
+    	});
+
+    	$("#refresh").click(function(e){
+    		e.preventDefault();
+    		dataObj.words=[];
+    		dataObj.startTime = null;
+    		dataObj.endTime = null;
+    		dataObj.text = null;
+    		dataObj.getWords();
     	})
     	
 	});
@@ -94,32 +104,31 @@
 <body>
 	<div class="container">
 		<div class="row">
-			<div class="span12 well">
-				<h1>Email Word Cloud</h1>
+			<div class="span12 well well-small">
+				<h1 class="title" style="text-align:center">Gist</h1>
 			</div>
 		</div>
 		<div class="row">
 			<div class="span9">
 				<div class="row">
 					<div class="span9">
-						<div style="height:60px;">
+						<div style="height:15px;margin">
 							<div id="slider"></div>
 						</div>
 					</div>
 					<div class="span9">
-						<span class="wordsHeading">All</span>
 					</div>
 					<div class="span9">
-					    <div id="example" style="width: 700px; height: 400px;"></div>
+					    <div id="example" style="width: 800px; height: 500px;"></div>
 					</div>
 				</div>
 			</div>
 			<div class="span3">
-				    <!-- <div class="input-prepend"> -->
-				      <!-- <span class="add-on"><i class="icon-user"></i></span> -->
+				    <div class="input-prepend">
+				      <span class="add-on"><i class="icon-user"></i></span>
 				      <input class="input" id="userText" type="text">
 				      <!-- <button class="btn" type="button">Search</button> -->
-				    <!-- </div> -->
+				    </div>
 				    <table class="table striped">
 				    	<tr>
 				    		<td>Query Time</td>
@@ -134,6 +143,7 @@
 				    		<td id="wordCount"></td>
 				    	</tr>
 				    </table>
+				    <a class="btn btn-primary" id="refresh" href="#"> <i class="icon-refresh icon-white"></i> Refresh</a>
 			</div>
 		</div>
 		<div class="row">
