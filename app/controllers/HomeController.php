@@ -32,7 +32,7 @@ class HomeController extends BaseController {
 
 	public function getWords() {
 		$neoModel = new Neo4jModel();
-		if(!Input::has('data')){
+		if(!isset($_GET['data'])){
 			//TODO: Take a word as an input and use that to filter the word count as well.
 			$result = $neoModel->getWordCount();
 			return Response::json($result);
