@@ -83,17 +83,24 @@ class Neo4jInterface{
 			}
 		}
 
-		$queryString .= " with sum(s.count) as tagcount, word
+		$queryString .= " with sum(s.count) as tagcount, word, count(email) as emailCount
 						order by tagcount desc
-						return tagcount, word.value";
+						return tagcount, word.value, emailCount";
+		
 		$query = new Query($this->_client,$queryString);
 		$result = $query->getResultSet() ;
+		
 		$resultArray = array();
+		
 		foreach ($result as $row) {
 			$wordArray = array( 'weight' => $row[0],
 								'text' => $row[1]);
 			array_push($resultArray, $wordArray);
+			//Getting the e-mails count. This is the same value in all the rows
+			$resultArray['email_count'] = $row[2];
 		}
+		$resultArray['word_count'] = count($resultArray)-1 ;
+		print_r($resultArray);
 		return $resultArray;
 	}
 
