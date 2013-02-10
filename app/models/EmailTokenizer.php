@@ -46,7 +46,6 @@ class EmailTokenizer {
 	
 	public function __construct($email) {
 		$this->email = $email;
-		Log::debug(var_export($email, true));
 		$this->initialize();
 	}
 
@@ -112,7 +111,6 @@ class EmailTokenizer {
 	private function strippedBody() {
 
 		$str = preg_replace('/[^a-z0-9\'\s]+/i', '', $this->body);
-		Log::debug($str);
 		return $str;
 
 	}
@@ -120,6 +118,7 @@ class EmailTokenizer {
 	public function storeToGraph() {
 
 		$id = hash('md5', $this->toString());
+
 		$this->id = $id;
 		Log::debug('Got the ID: '.$id);
 		Log::debug(var_export($this, true));
