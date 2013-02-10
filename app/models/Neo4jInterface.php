@@ -103,7 +103,7 @@ class Neo4jInterface{
 			$resultArray['email_count'] = $row[2];
 		}
 		$resultArray['words'] = $wordArray;
-		$resultArray['word_count'] = count($resultArray)-1 ;
+		$resultArray['word_count'] = count($resultArray['words']) ;
 		return $resultArray;
 	}
 
