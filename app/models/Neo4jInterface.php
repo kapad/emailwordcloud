@@ -104,7 +104,6 @@ class Neo4jInterface{
 		}
 		$resultArray['words'] = $wordArray;
 		$resultArray['word_count'] = count($resultArray['words'])-1 ;
-		print_r($resultArray);
 		return $resultArray;
 	}
 
