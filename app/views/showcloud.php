@@ -1,10 +1,11 @@
 <html>
 <head>
     <title>Email Word Cloud</title>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/css/jqcloud.css" />
-    <!--<link rel="stylesheet" type="text/css" href="/css/classic-min.css"/>-->
     <link rel="stylesheet" type="text/css" href="/css/iThing-min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.2.2.1.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.2.2.1.css" />
+
     <script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="/js/jquery.mousewheel.min.js"></script>
@@ -31,6 +32,9 @@
 					    wordArr = data.words.map(function(d){
 		    				return {text : d.text, weight: d.weight, link : "#"};
 		    			});
+		    			$("#wordCount").text(data.word_count);
+		    			$("#queryTime").text(data.query_time);
+		    			$("#emailCount").text(data.email_count);
 		    			$("#example").html("");
 					    $("#example").jQCloud(wordArr); 
 		  			}
@@ -68,41 +72,22 @@
 			dataObj.endTime = moment(data.values.max).format("YYYY-MM-DD");
 			dataObj.getWords();
 		});
-
-	    // getWords(function(data){
-	    // 	var wordArr = [];
-		   //  $.each(data,function(index,obj){
-		   //  	obj.link = "#";
-		   //  	wordArr.push(obj);
-		   //  });
-		   //  $("#example").jQCloud(wordArr);    	
-	    // });
-
-	    // function setRelatedWords(words){
-	    // 	var wordArr = [];
-	    // 	$.ajax({
-	    // 		type:"GET",
-	    // 		// dataType: "json",
-	    // 		url : "/getwords",
-	    // 		data : {data:words},
-	    // 		success :function(data) {
-	    // 			wordArr = data.map(function(d){
-	    // 				return {text : d.text, weight: d.weight, link : "#"};
-	    // 			});
-	    // 			console.log(wordArr);
-				 //    $("#example").html("");
-		   //  		$("#example").jQCloud(wordArr);
-	    // 		}
-	    // 	});
-	    // }
-    // $("#example").jQCloud(word_array);    	
+    	
     	$(document).on("click",".jqcloud a", function(e){
     		e.preventDefault();
     		dataObj.words.push($(this).text());
     		$(".wordsHeading").text(dataObj.words.join('+'));
     		dataObj.getWords();
     	});
-    	// $(document).o
+
+    	$("#userText").keypress(function(e){
+    		// e.preventDefault();
+    		if(e.which==13){
+    			dataObj.text = $("#userText").val();
+    			dataObj.getWords();
+    		}
+    	})
+    	
 	});
 </script>
 </head>
@@ -118,7 +103,7 @@
 				<div class="row">
 					<div class="span9">
 						<div style="height:60px;">
-							<div id="slider" ></div>
+							<div id="slider"></div>
 						</div>
 					</div>
 					<div class="span9">
@@ -129,12 +114,31 @@
 					</div>
 				</div>
 			</div>
-			<div class="span4">
+			<div class="span3">
+				    <!-- <div class="input-prepend"> -->
+				      <!-- <span class="add-on"><i class="icon-user"></i></span> -->
+				      <input class="input" id="userText" type="text">
+				      <!-- <button class="btn" type="button">Search</button> -->
+				    <!-- </div> -->
+				    <table class="table striped">
+				    	<tr>
+				    		<td>Query Time</td>
+				    		<td id="queryTime"></td>
+				    	</tr>
+				    	<tr>
+				    		<td>Email Count</td>
+				    		<td id="emailCount"></td>
+				    	</tr>
+				    	<tr>
+				    		<td>Word Count</td>
+				    		<td id="wordCount"></td>
+				    	</tr>
+				    </table>
 			</div>
 		</div>
 		<div class="row">
 			<div class="span12 well">
-				<p style="text-align:center;">Thanks </p> 
+				<!-- <p style="text-align:center;">Thanks </p>  -->
 			</div>
 		</div>
 	</div>
