@@ -112,14 +112,12 @@
 			<div class="span9">
 				<div class="row">
 					<div class="span9">
-						<div style="height:15px;margin">
+					    <div id="example" style="width: 800px; height: 460px;"></div>
+					</div>
+					<div class="span9">
+						<div style="height:15px;">
 							<div id="slider"></div>
 						</div>
-					</div>
-					<div class="span9">
-					</div>
-					<div class="span9">
-					    <div id="example" style="width: 800px; height: 500px;"></div>
 					</div>
 				</div>
 			</div>
@@ -146,11 +144,11 @@
 				    <a class="btn btn-primary" id="refresh" href="#"> <i class="icon-refresh icon-white"></i> Refresh</a>
 			</div>
 		</div>
-		<div class="row">
+		<!-- <div class="row">
 			<div class="span12 well">
-				<!-- <p style="text-align:center;">Thanks </p>  -->
+				<p style="text-align:center;">Thanks </p> 
 			</div>
-		</div>
+		</div> -->
 	</div>
 </body>
 </html>
