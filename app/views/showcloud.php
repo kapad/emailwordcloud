@@ -28,7 +28,7 @@
 		  			url : "/getwords",
 		  			success : function(data) {
 		  				var wordArr = [];
-					    wordArr = data.map(function(d){
+					    wordArr = data.words.map(function(d){
 		    				return {text : d.text, weight: d.weight, link : "#"};
 		    			});
 		    			$("#example").html("");
@@ -66,8 +66,6 @@
 			console.log("Something moved. min: " + data.values.min + " max: " + data.values.max);
 			dataObj.startTime = moment(data.values.min).format("YYYY-MM-DD");
 			dataObj.endTime = moment(data.values.max).format("YYYY-MM-DD");
-			console.log(dataObj.startTime);
-			console.log(dataObj.endTime);
 			dataObj.getWords();
 		});
 
@@ -116,18 +114,22 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="span12">
-				<div style="height:60px;">
-					<div id="slider" ></div>
+			<div class="span9">
+				<div class="row">
+					<div class="span9">
+						<div style="height:60px;">
+							<div id="slider" ></div>
+						</div>
+					</div>
+					<div class="span9">
+						<span class="wordsHeading">All</span>
+					</div>
+					<div class="span9">
+					    <div id="example" style="width: 700px; height: 400px;"></div>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="row">
-			<div class="span12">
-				<span class="wordsHeading">All</span>
-			</div>
-			<div class="span12">
-			    <div id="example" style="width: 700px; height: 400px;"></div>
+			<div class="span4">
 			</div>
 		</div>
 		<div class="row">
